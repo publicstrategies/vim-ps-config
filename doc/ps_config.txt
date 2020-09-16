@@ -1,0 +1,625 @@
+*ps_config.txt* *public-strategies* *ps_plugin*
+================================================================================
+                     ____  _  _  ____  __    __  ___                           ~
+                    (  _ \/ )( \(  _ \(  )  (  )/ __)                          ~
+                     ) __/) \/ ( ) _ (/ (_/\ )(( (__                           ~
+                    (__)  \____/(____/\____/(__)\___)                          ~
+           ____  ____  ____   __  ____  ____  ___  __  ____  ____              ~
+          / ___)(_  _)(  _ \ / _\(_  _)(  __)/ __)(  )(  __)/ ___)             ~
+          \___ \  )(   )   //    \ )(   ) _)( (_ \ )(  ) _) \___ \             ~
+          (____/ (__) (__\_)\_/\_/(__) (____)\___/(__)(____)(____/             ~
+================================================================================
+
+ABOUT                                               *ps-config-about* *ps-about*
+
+Author:  Evan Gray <mailto:evan.gray@publicstrategies.com>
+Repo:    https://gitlab.com/publicstrategies/vim-psi-config
+License: MIT License
+
+================================================================================
+
+TABLE OF CONTENTS                           *ps-plugin* *ps-config-toc* *ps-toc*
+
+Introduction .............................. |ps-introduction|
+Setup ..................................... |ps-setup|
+  Personal Vimrc Setup .................... |ps-personal-vimrc-setup|
+  Project-specific Vimrc Setup ............ |ps-project-specific-vimrc-setup|
+Commands .................................. |ps-commands|
+  Update the plugin ....................... |PSUpdatePlugin|
+  Reload the plugin ....................... |PSReloadPlugin|
+  Generate project-specific vimrc file .... |PSVimrc|
+  Set up a new PS project ................. |PSNewProject|
+  Create SQL directory .................... |DBCreateSQLDir|
+  List the current database URL ........... |DBList|
+  Switch the database URL ................. |DBSwitch|
+  Create or open a SQL file ............... |DBFile|
+  Generate default SQL .................... |DBGenerateSQL|
+  Create or open a DBDiagram file ......... |DBDiagram|
+  Generate default diagram ................ |DBGenerateDiagram|
+  Create notes directory .................. |PSCreateNotesDir|
+  Create or open a notes file ............. |PSNote|
+  Call rails commands from terminal ....... |PSRails|
+  Call artisan commands from terminal ..... |PSArtisan|
+Settings .................................. |ps-settings|
+  Global Variables ........................ |ps-global-variables|
+    Identify a PS project ................. |g:is_ps_project|
+    Consistency settings .................. |g:ps_consistency_settings_list|
+    Notes file path ....................... |g:ps_notes_directory|
+    SQL file path ......................... |g:db_sql_directory|
+    List of databse URLs .................. |g:db_list|
+    Default database from list ............ |g:db_default_database|
+    Silence DBSwitch production warning ... |g:db_switch_confirm_production|
+    Silence DBSwitch messages ............. |g:db_switch_silently|
+  How to disable features ................. |ps-disabling-features|
+    Disable dadbod extended functionality . |g:ps_config_use_dadbod|
+    Disable framework commands ............ |g:ps_config_use_framework_commands|
+    Disable consistency ................... |g:ps_config_use_consistency|
+    Disable notes.......................... |g:ps_config_use_notes|
+    Disable curl .......................... |g:ps_config_use_curl|
+Features and Examples ..................... |ps-features|
+  DadBod Extended Functionality ........... |ps-dadbod|
+    Switching between database URLs ....... |ps-db-url-switching|
+    SQL files ............................. |ps-sql-files|
+    Automatic Query Generation ............ |ps-automatic-sql-query-generation|
+  DBML .................................... |ps-dbml|
+    SQL files ............................. |ps-dbml-files|
+    DBML Syntax ........................... |ps-dbml-syntax|
+  Project-specific notes .................. |ps-notes|
+  Calling framework commands .............. |ps-framework-commands|
+  Enforcing Consistency ................... |ps-enforcing-consistency|
+
+================================================================================
+
+INTRODUCTION                         *ps-config-introduction*  *ps-introduction*
+
+A plugin for Public Strategies vim-users that helps enforce consistency among
+developers and across projects by setting things like 'expandtab' and indention
+levels. It also provides some plugin-style features, such as switching database
+URLs for use with the DadBod (db) plugin, creating and editing notes and SQL
+files, and project-specific vimrc file generation.
+
+================================================================================
+
+SETUP                                               *ps-config-setup* *ps-setup*
+
+                    *ps-config-personal-vimrc-setup* *ps-personal-vimrc-setup*
+Personal Vimrc Setup~
+
+A few features will probably suggest for you to use project-specific vimrc
+files. To get this to work, in your personal vimrc file, set the option 'exrc'.
+>
+    set exrc
+<
+This will source vimrc files in your current directory. If this is a concern
+for you, you can still set the options in your personal vimrc file, but it will
+be much more difficult to have project-specific settings.
+
+      *ps-config-project-specific-vimrc-setup* *ps-project-specific-vimrc-setup*
+Project Specific Vimrc Setup~
+
+To enable the plugin for a project, you must set |g:is_ps_project| in your
+project's vimrc file.
+>
+    let g:is_ps_project = 1
+<
+It's strongly recommended to do this in project-specific vimrc files, but you
+could put it in your personal vimrc. Just be aware that this plugin will run
+for every file you open in vim, even if it's not a Public Strategies project!
+
+For help generating a project-specific vimrc file, use |:PSVimrc|.
+
+================================================================================
+
+COMMANDS                                      *ps-config-commands* *ps-commands*
+
+These commands are explained in greater detail with examples in |ps-features|.
+
+Note: If a command doesn't exist, the feature is probably disabled. See
+|ps-disabling-features|.
+
+                                              *PSUpdatePlugin* *:PSUpdatePlugin*
+:PSUpdatePlugin            Pulls the latest version of master. A restart is
+                           required for the changes to take effect.
+
+                                              *PSReloadPlugin* *:PSReloadPlugin*
+:PSReloadPlugin            Re-source the project's vimrc if it exists, and
+                           Reload the plugin. If |g:is_ps_project| was 0, but
+                           is now 1, commands and features will be enabled.
+
+                                                            *PSVimrc* *:PSVimrc*
+:PSVimrc                   Create vimrc and generate contents for a new project.
+
+                                                          *PSVimrc!* *:PSVimrc!*
+:PSVimrc!                  Invoke |PSVimrc|, then automatically save the
+                           vimrc and invoke |PSReloadPlugin|.
+
+                                                  *PSNewProject* *:PSNewProject*
+:PSNewProject              Call |PSVimrc| and |DBCreateSQLDir|.
+
+                                                *PSNewProject!* *:PSNewProject!*
+:PSNewProject!             Call |PSVimrc!| and |DBCreateSQLDir|.
+
+                                              *DBCreateSQLDir* *:DBCreateSQLDir*
+:DBCreateSQLDir [{dir}]    Create the {dir} if it doesn't exist. If {dir} is not
+                           passed, |g:db_sql_file_path| is used. Note that if
+                           {dir} is a regex, like the default value for
+                           |g:db_sql_file_path|, this command won't work.
+
+                                            *DBCreateSQLDir!* *:DBCreateSQLDir!*
+:DBCreateSQLDir! [{dir}]   Same as |DBCreateSQLDir|, but silence error messages.
+
+                                                              *DBList* *:DBList*
+:DBList                    Show the key of the current database URL.
+
+                                                            *DBList!* *:DBList!*
+:DBList!                   Same as |DBList|, but also shows the actual URL.
+
+                                                          *DBSwitch* *:DBSwitch*
+:DBSwitch [{key}]          Switch the databaseb URL associated with {KEY}. If
+                           {KEY} is not passed, |g:db_default_database| is used.
+                           When switching to a production table, you will be
+                           asked to confirm the switch.
+
+                                                        *DBSwitch!* *:DBSwitch!*
+:DBSwitch! [{key}]         Same as |DBSwitch|, but skip production confirmation.
+
+                                                              *DBFile* *:DBFile*
+:DBFile {table}            Open a SQL file for {table} in |g:db_sql_directory|.
+                           If the file doesn't exist, it will be created and
+                           |DBGenerateSQL| will be invoked. <Tab> completion
+                           will list existing files. To open a file in a
+                           subdirectory, prepend it with a slash, i.e.
+                           "mysql/users". A ".sql" file extension is optional;
+                           it will be automatically appended if absent.
+
+                                                *DBGenerateSQL* *:DBGenerateSQL*
+:DBGenerateSQL [{table}]   Generate default SQL for {table}, where {table} is
+                           the table to use. If {table} is not passed, generates
+                           based off current file name. For example, if the file
+                           name is "users.sql", SQL will be generated for the
+                           users table. Note that nothing is done to ensure
+                           {table} is a valid table name.
+
+                                              *DBGenerateSQL!* *:DBGenerateSQL!*
+:DBGenerateSQL! [{table}]  Same as |DBGenerateSQL|, but places the text above
+                           the cursor.
+
+                                                        *DBDiagram* *:DBDiagram*
+:DBDiagram {table}         Open a DBML file for {table} in
+                           |g:db_diagrm_directory|. If the file doesn't exist,
+                           it will be created and |DBGenerateDiagram| will be
+                           invoked. <Tab> completion will list existing files.
+                           A ".dbml" file extension is optional; it will be
+                           automatically appended if absent.
+
+                                        *DBGenerateDiagram* *:DBGenerateDiagram*
+:DBGenerateDiagram [{table}]
+                           Generate default DBDiagram for {table}, where
+                           {table} is the table to use. If {table} is not
+                           passed, generates based off current file name. For
+                           example, if the file name is "users.dbml", DBML will
+                           be generated for the users table. Note that nothing
+                           is done to ensure {table} is a valid table name.
+
+                                      *DBGenerateDiagram!* *:DBGenerateDiagram!*
+:DBGenerateDiagram! [{table}]
+                           Same as |DBGenerateDiagram|, but places the text
+                           above the cursor.
+
+                                          *PSCreateNotesDir* *:PSCreateNotesDir*
+:PSCreateNotesDir [{dir}]  Create the notes {dir}. If {dir} isn't passed,
+                           |g:ps_notes_directory| is used.
+
+                                        *PSCreateNotesDir!* *:PSCreateNotesDir!*
+:PSCreateNotesDir! [{dir}] Same as |PSCreateNotesDir|, but silence errors.
+
+                                                              *PSNote* *:PSNote*
+:PSNote {topic} [, ...]    Create new {topic} markdown file in the
+                           |g:ps_notes_directory|, or open it if it already
+                           exists. The ".md" extension can be omitted. Can be
+                           multiple words separated by spaces, which will be
+                           replaced by underscores in the file name.
+
+                                                            *PSRails* *:PSRails*
+:PSRails [{command}]       Call Rails commands from a vim terminal. Uses
+                           docker-compose if in a Docker environment; otherwise,
+                           tries to use bundler. If all else fails, tries
+                           generic rails executable. If commands are not
+                           provided, opens a Rails console.
+
+                                                        *PSArtisan* *:PSArtisan*
+:PSArtisan [{command}]     Call Artisan commands from a vim terminal. Uses
+                           docker-compose if in a Docker environment; otherwise,
+                           tries generic artisan executable. If commands are not
+                           provided, opens a Tinker console.
+
+================================================================================
+
+SETTINGS                                     *ps-config-settings*  *ps-settings*
+
+                             *ps-config-global-variables*  *ps-global-variables*
+Global Variables~
+
+Setting the following values in vimrc files will alter the behavior of the
+plugin.
+
+                                                               *g:is_ps_project*
+Must be enabled for plugin to enable. It is highly recommended to set this in
+your project's vimrc file, and not your personal one. It will work, but it will
+also cause the plugin to run every time you open vim, and it makes it much
+harder to have project-specific settings.
+>
+    let g:is_ps_project = 1
+<
+                                                *g:ps_consistency_settings_list*
+List of consistency settings that will be enabled. Elements must be valid
+options for `:set`, wrapped in quotes. Settings in here will override the
+plugin's defaults. The default is what's in the example.
+>
+    let g:ps_consistency_settings_list = [
+              'nocompatible',
+              'expandtab',
+            ]
+<
+                                                          *g:ps_notes_directory*
+The path where notes files are kept. The default is "docs".
+>
+    let g:ps_notes_directory = 'notes'
+<
+                                                            *g:db_sql_directory*
+The path where SQL files are kept. The default is "db/sql", "database/sql", or
+just "sql" if "db" or "database" doesn't exist.
+>
+    let g:db_sql_directory = 'db/sql'
+<
+                                                        *g:db_diagram_directory*
+The path where DBML files are kept. The default is "db/diagrams",
+"database/diagrams", or just "diagrams" if "db" or "database" doesn't exist.
+>
+    let g:db_diagram_directory = 'db/diagrams'
+<
+                                                                     *g:db_list*
+2-D List of database URL The "keys" will be used as an identifier when setting
+the URLs. They will also used for tab-completion. The values should be database
+URLs to those databases. There is no default.
+>
+    let g:db_list = [
+            \   ['development', 'adapter://user:password@host:port/database'],
+            \   ['production',  'adapter://user:password@host:port/database'],
+            \ ]
+<
+                                                         *g:db_default_database*
+The database key from |g:db_list| to use as the default. If not set, the first
+element of |g:db_list| will be used. This is why |g:db_list| must be a 2-D list
+instead of a dictionary; dictionaries are not ordered in vim script. The
+default is what's in the example.
+>
+    let g:db_default_database = 'development'
+<
+                          *ps-config-disabling-features* *ps-disabling-features*
+Disabling Features~
+
+If setting variables that disable features, make sure set it in your personal
+"vimrc" file, or it'll affect everyone!
+
+                                                        *g:ps_config_use_dadbod*
+Boolean to enable/disable dadbod extension features.
+Default: 1 (enabled).
+>
+    let g:ps_config_use_dadbod = 0
+<
+                                            *g:ps_config_use_framework_commands*
+Boolean to enable/disable framework commands.
+Default: 1 (enabled).
+>
+    let g:ps_config_use_framework_commands = 0
+<
+                                                   *g:ps_config_use_consistency*
+Boolean to enable/disable consistency features.
+Default: 1 (enabled).
+>
+    let g:ps_config_use_consistency = 0
+<
+                                                          *g:ps_config_use_curl*
+Boolean to enable/disable curl features.
+Default: 1 (enabled).
+>
+    let g:ps_config_use_curl = 0
+<
+                                                         *g:ps_config_use_notes*
+Boolean to enable/disable notes features.
+Default: 1 (enabled).
+>
+    let g:ps_config_use_notes = 0
+<
+
+================================================================================
+
+FEATURES AND EXAMPLES                         *ps-config-features* *ps-features*
+
+DADBOD EXTENDED FUNCTIONALITY                     *ps-config-dadbod* *ps-dadbod*
+
+The following features are an extension of Tim Pope's DadBod
+(https://github.com/tpope/vim-dadbod).
+
+                              *ps-config-db-url-switching* *ps-db-url-switching*
+Switching between database URLs for DadBod access~
+
+In your project, there should exist a vimrc file. In that file, you should
+define a 2-D list called |g:db_list|. The "keys" will be used as an identifier
+when setting the URLs. They will also used for tab-completion. The values
+should be database URLs to those databases.
+>
+    let g:db_list = [
+          \   ['testing',        'postgres://user:password@host:port/database'],
+          \   ['development',    'postgres://user:password@host:port/database'],
+          \   ['staging',        'postgres://user:password@host:port/database'],
+          \   ['production',     'postgres://user:password@host:port/database'],
+          \   ['mysql_testing',     'mysql://user:password@host:port/database'],
+          \   ['mysql_development', 'mysql://user:password@host:port/database'],
+          \   ['mysql_staging',     'mysql://user:password@host:port/database'],
+          \   ['mysql_production',  'mysql://user:password@host:port/database'],
+          \ ]
+<
+Key names should follow the above naming convention. Note the "mysql_" prefix is
+used to match sub-directories of "sql/" and set the database URLs of the files
+accordingly. See |ps-sql-files| for more details.
+
+You can define a default database by setting |g:db_default_database| in the
+project's vimrc.
+>
+    let g:db_default_database = 'development'
+<
+If |g:db_default_database| is not defined, but "development" exists as a key, it
+will be the default database. Otherwise, the first database in the list will be
+the default. This is why we use a 2-D list instead of a dictionary; dictionaries
+are not ordered in vimscript.
+
+If your database URL contains a special character, you'll need to
+percent-encode it. For example, an octothorp (#) will need to be written as
+"%23", and spaces as "%20".
+
+If, at any time, you want to see which database is being used, use the |:DBList|
+command. If you use the naming convention previously explained, if the current
+database URL is set to a production database, it will be in red. The |:DBList!|
+version of the command will also show the actual DB URL.
+>
+    :DBList
+    "=> b:db is set to mysql
+
+    :DBList!
+    "=> b:db is set to mysql: mysql://user:password@host:port/database
+<
+Still assuming the above example list, switching DBs is now as easy as calling
+|:DBSwitch|. This feature has tab-completion, so you can use <tab> and it will
+show/cycle the options. |:DBSwitch| with no arguments will switch to
+|g:db_default_database|.
+
+If you attempt to switch to a production database, and assuming you named your
+keys correctly, you will be asked to confirm the change. To avoid this
+confirmation, use the bang version of the command.
+>
+    :DBSwitch! production
+<
+                                                *g:db_switch_confirm_production*
+To permanently disable this confirmation, set the following in your personal
+"vimrc" file.
+>
+    let g:db_switch_confirm_production = 0
+<
+                                                          *g:db_switch_silently*
+To permanently suppress all messages when switching DB URLs, set the following
+in your personal "vimrc" file.
+>
+    let g:db_switch_silently = 1
+<
+To learn about database URLs, read the help documentation for DadBod.
+>
+    :help dadbod
+<
+                                            *ps-sql-files* *ps-config-sql-files*
+SQL files and automatic database URLs~
+
+In most of our projects, we keep a directory for storing common SQL queries for
+tables. The directory is usually one of the following:
+>
+    | Rails   | Laravel       |
+    |---------|---------------|
+    | db/sql/ | database/sql/ |
+<
+When opened, files in this directory will automatically be set to the default
+database -- either "development" if it exists, or the first database listed in
+|g:db_list|. If, however, the file is in a sub-directory, and that
+sub-directory matches a key in |g:db_list|, the database URL will be set to
+that key's value.
+
+Assuming a Rails project's vimrc contains the following:
+>
+    let g:db_list = [
+          \   ['development',       'postgres://user@host/database'],
+          \   ['mysql_development', 'mysql://user:password@host:port/database'],
+          \ ]
+<
+A file called "db/sql/users.sql" would point to "postgres://user@host/database".
+This would also be true if the file were called "db/sql/development/users.sql".
+
+If we want the URL to point to "mysql://user:password@host:port/database", we'd
+need to call the file "db/sql/mysql_development/users.sql". If you call the
+sub-directory "mysql" instead of "mysql_development", the "_development" suffix
+will be implied.
+
+Note that you can still change the database URL with |:DBSwitch|.
+
+To open a new or existing SQL file in the directory, use |:DBFile|. To access
+files in subdirectories of |g:db_sql_directory|, prepend the directory to the
+table name.
+>
+    :DBFile users
+    :DBFile mysql/users
+<
+You can change the path to the SQL files by setting |g:db_sql_directory| to a
+string.
+>
+    let g:db_sql_directory = '/db/sql'
+<
+
+  *ps-automatic-sql-query-generation* *ps-config-automatic-sql-query-generation*
+Automatic Query Generation for SQL Files~
+
+Any new or empty SQL file in |g:db_sql_directory| opened with vim will
+automatically have default queries generated in the file. It is assumed that
+the file name will be the table name to query. These queries are even adapter
+aware, which as we've learned, are based off the directory in which they
+reside. Assuming the file name is "users.sql":
+
+If the adapter is postgres, the following contents will be placed in the file:
+>
+    -- SQL for 'users' table generated by vim-ps-config.
+    -- Sun Feb 23 08:23:53 2020
+
+    -- List all tables in the database.
+    \dt;
+
+    -- Describe 'users' table's attributes.
+    \d users;
+
+    -- Count records in 'users'.
+    select count(*) from users;
+
+    -- List all records from the 'users' table.
+    select * from users;
+<
+If the adapter is mysql, the following contents will be placed in the file:
+>
+    -- SQL for 'users' table generated by vim-ps-config.
+    -- Sun Feb 23 08:23:53 2020
+
+    -- List all tables in the database.
+    show tables;
+
+    -- Describe 'users' table's attributes.
+    describe users;
+
+    -- Count records in 'users'.
+    select count(*) from users;
+
+    -- List all records from the 'users' table.
+    select * from users;
+<
+There are also commands provided for generating this sql at-will. Using the
+bang form will place text above current cursor position. Note that a database
+URL must be set.
+>
+    :DBGenerateSQL[!] [TABLE]
+<
+
+DBML                                                  *ps-dbml* *ps-config-dbml*
+
+DBML is an adapter-agnostic way of designing SQL tables. To get syntax
+highlighting for this file type, install the following plugin.
+    https://github.com/jidn/vim-dbml
+To visualize the diagrams, use the following site.
+    https://dbdiagram.io
+
+                                          *ps-dbml-files* *ps-config-dbml-files*
+DBML Files~
+
+DBML files are handled extremely similarly to |ps-sql-files| files, except
+instead of living in a "sql" subdirectory, they live in "diagrams". Call the
+following to open a diagram for the "users" table.
+>
+    :DBDiagram users
+<
+Upon opening "db/diagrams/users.dbml" for the first time, the following text
+will be generated.
+>
+    // DBDiagram for 'users' table generated by vim-ps-config.
+    // Mon Jul  6 15:43:44 2020
+
+    // View diagrams on https://dbdiagram.io
+
+    Table users as u {
+      id int [pk, increment]
+
+      created_at timestamp
+      updated_at timestamp
+    }
+<
+And yes, if the table name is something like "test_table", the table alias
+would be "tt"! You can generate this text at-will using the following command.
+>
+    :DBGenerateDiagram[!] [TABLE]
+<
+
+                                        *ps-dbml-syntax* *ps-config-dbml-syntax*
+DBML Syntax~
+
+Here is a quick-reference guide for dbml syntax.
+>
+    Table example as e {                   // Define table and alias
+        id int [pk, increment]             // primary key
+        another_id int [ref: - another.id] // one to one relationship
+        another_id int [ref: < another.id] // one to many relationship
+        another_id int [ref: > another.id] // many to one relationship
+        enum_field example_enum            // reference an enum
+        is_active boolean [default: true]  // boolean with a default of true
+        name varchar                       // normal field, string
+        created_at timestamp               // normal field, timestamp
+    }
+
+    Enum example_enum {                    // create an enum
+        good                               // enum item
+        bad                                // enum item
+    }
+<
+
+NOTES                                               *ps-config-notes* *ps-notes*
+
+Notes are handled similarly to |ps-sql-files|. They are just markdown files
+stored in a "docs" directory. Use |PSNote| to create a new note, or open an
+existing one. You can leave off the ".md" extension; it will be appended
+automatically unless you supply it. <Tab> completion will list existing files.
+Spaces will be converted to underscores, and a header will also be generated in
+the file.
+
+The following would create a file called "docs/notes/something_i_learned.md"
+with a header of "# Something I Learned"
+>
+    :PSNote something i learned
+<
+
+FRAMEWORK COMMANDS        *ps-config-framework-commands* *ps-framework-commands*
+
+For Rails and Laravel projects, commands exist to leverage vim's terminal
+feature to call rails and artisan. These are docker-aware, and will use
+docker-compose if in a Docker environment. If no arguments are passed, a REPL is
+opened. For example, to run the tests for a project, it's as simple as:
+>
+    :PSRails test
+    :PSArtisan test
+<
+You must be in the root of the project for this to work properly, so either
+open vim from the correct directory, or leverage a plugin like vim-rooter.
+Note that all these commands do is provide wrappers for the rails and artisan
+commands, and are NOT meant to replace the far-more advanced vim-rails and
+vim-laravel plugins.
+
+ENFORCING CONSISTENCY *ps-config-enforcing-consistency* *ps-enforcing-consistency*
+
+In the 'ftplugin' directory, we specify settings based on filetype, such as
+indention levels.
+
+Other settings that get enabled:
+    - 'expandtab'
+    - 'nocompatible'
+
+You can add to this list on a per-project basis by setting the following value
+in your project's vimrc file:
+>
+    let g:ps_consistency_settings_list = [
+        \   'backspace=2',
+        \   'wrapscan',
+        \ ]
+<
+Note that the elements must be valid arguments for 'set', wrapped in quotes.
+
