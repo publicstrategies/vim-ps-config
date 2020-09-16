@@ -1,6 +1,6 @@
 # vim-ps-config
 A plugin for Public Strategies `vim`-users that helps enforce consistency among
-develoeprs and across projects by setting things like `expandtab` and indention
+developers and across projects by setting things like `expandtab` and indention
 levels. It also provides some plugin-style features, such as switching database
 URLs for use with the DadBod (db) plugin.
 
@@ -10,7 +10,7 @@ This Readme covers most of the features, but you'll need to read the actual
 ## Table of Contents
 <img
 align="right"
-src="/uploads/ef7cac4d7a0e1dbe2f1dee1314d4e7b4/psivim6.png"
+src="https://user-images.githubusercontent.com/12698076/93396889-0f811500-f83e-11ea-96ba-cca08c66b1fe.png"
 height="350"
 width="350"
 alt="Vim PS logo with Ruby and React logos"
@@ -43,12 +43,12 @@ package directory you want.
 ```sh
 mkdir -p ~/.vim/pack/public-strategies/start/
 
-git clone git@gitlab.com:publicstrategies/vim-psi-config.git \
+git clone https://github.com/publicstrategies/vim-ps-config.git \
     ~/.vim/pack/public-strategies/start/vim-psi-config
 ```
 
 Don't forget the documentation. Run `:helptags` on the `doc/` directory. Or, to
-update all your pluigins' documentation:
+update all your plugins' documentation:
 
 ```
 :helptags ALL
@@ -58,12 +58,12 @@ update all your pluigins' documentation:
 Clone the repository in `.vim/bundle`.
 
 ```sh
-git clone git@gitlab.com:publicstrategies/vim-psi-config \
+git clone https://github.com/publicstrategies/vim-ps-config.git \
     ~/.vim/bundle/vim-psi-config
 ```
 
 Don't forget the documentation. Run `:helptags` on the `doc/` directory. Or, to
-update all your pluigins' documentation:
+update all your plugins' documentation:
 
 ```
 :Helptags
@@ -158,7 +158,7 @@ There's also a command to create the `sql` directory if it doesn't exist:
 If `DIR` is passed, it's used as the directory name. This can included nested
 directories, as they will be made with `mkdir -p`. If `DIR` is not passed, the
 plugin will use `g:db_sql_directory` if it exists. If `!` is used, errors will
-be surpressed.
+be suppressed.
 
 If you want to run both `:PSVimrc` and `:DBCreateSQLDir!` to set up all the
 infrastructure at the same time, a command exists for that:
