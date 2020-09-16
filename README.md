@@ -10,7 +10,7 @@ This Readme covers most of the features, but you'll need to read the actual
 ## Table of Contents
 <img
 align="right"
-src="https://user-images.githubusercontent.com/12698076/93396889-0f811500-f83e-11ea-96ba-cca08c66b1fe.png"
+src="https://user-images.githubusercontent.com/12698076/93400567-ad2c1280-f845-11ea-8bb1-4a5ba8fde26a.png"
 height="350"
 width="350"
 alt="Vim PS logo with Ruby and React logos"
@@ -29,7 +29,7 @@ alt="Vim PS logo with Ruby and React logos"
     - [Automatic Query Generation for SQL Files](#automatic-query-generation-for-sql-files)
   - [Framework Commands](#framework-commands)
   - [Enforcing consistency](#enforcing-consistency)
-- [Things not covered in this document](#things-not-covered-in-this-document)
+  - [Features not covered in this readme](#features-not-covered-in-this-readme)
 - [Dependencies and Recommended Plugins](#dependencies-and-recommended-plugins)
 - [Contributing](#contributing)
   - [Contribution guidelines](CONTRIBUTING.md)
@@ -370,7 +370,7 @@ Consistency settings can be disabled by adding the following to your personal
 let g:ps_config_use_consistency = 0
 ```
 
-## Things not Covered in this Document
+### Features not Covered in this Readme
 Read the `:help` documentation for the following features:
 - `ps-notes`
 - `ps-curl`
