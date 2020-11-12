@@ -110,7 +110,7 @@ endfunction
 ""
 " True if g:is_ps_project is true
 function! ps#IsPsProject() abort
-  if exists('g:is_ps_project') && g:is_ps_project | return 1 | endif
+  if get(g:, 'is_ps_project') | return 1 | endif
 
   if exists('g:is_psi_project')
     if !exists('g:ps_did_deprecation_warning')
@@ -135,31 +135,31 @@ endfunction
 ""
 " True if is_ps_project is true, and dadbad isn't disabled.
 function! ps#CanUseDadbod() abort
-  return s:VarNotDisabled('g:ps_config_use_dadbod')
+  return get(g:, 'ps_config_use_dadbod', 1)
 endfunction
 
 ""
 " True if is_ps_project is true, and consistency isn't disabled.
 function! ps#CanUseConsistency() abort
-  return s:VarNotDisabled('g:ps_config_use_consistency')
+  return get(g:, 'ps_config_use_consistency', 1)
 endfunction
 
 ""
 " True if is_ps_project is true, and framework commands aren't disabled.
 function! ps#CanUseFrameworkCommands() abort
-  return s:VarNotDisabled('g:ps_config_use_framework_commands')
+  return get(g:, 'ps_config_use_framework_commands', 1)
 endfunction
 
 ""
 " True if is_ps_project is true, and notes isn't disabled.
 function! ps#CanUseNotes() abort
-  return s:VarNotDisabled('g:ps_config_use_notes')
+  return get(g:, 'ps_config_use_notes', 1)
 endfunction
 
 ""
 " True if is_ps_project is true, and curl isn't disabled.
 function! ps#CanUseCurl() abort
-  return s:VarNotDisabled('g:ps_config_use_curl')
+  return get(g:, 'ps_config_use_curl', 1)
 endfunction
 
 ""
@@ -194,14 +194,7 @@ endfunction
 "============="
 
 ""
-" True if var doesn't exist or exists and isn't false.
-function! s:VarNotDisabled(var) abort
-  return ps#IsPsProject() && (!exists(a:var) || eval(a:var))
-endfunction
-
-""
 " Try to intelligently determine where database directory should be located.
-" TODO is this the best way to handle this?
 function! s:GetDatabaseDir()
   if isdirectory('db') | return 'db/sql' | endif
   if isdirectory('database') | return 'database/sql' | endif
