@@ -1,11 +1,7 @@
 ""
-" Returns the sql directory.
+" Returns the notes directory.
 function! notes#GetNotesDirectory()
-  if exists('g:ps_notes_directory')
-    let l:dir = g:ps_notes_directory
-  else
-    let l:dir = 'docs'
-  endif
+  let l:dir = get(g:, 'ps_notes_directory', 'docs')
 
   return resolve(expand(l:dir)) . '/'
 endfunction
@@ -33,7 +29,7 @@ function! notes#File(...) abort
 endfunction
 
 ""
-" Creates the sql directory.
+" Creates the notes directory.
 function! notes#CreateNotesDir(fail_silently) abort
   let l:dir = notes#GetNotesDirectory()
 
