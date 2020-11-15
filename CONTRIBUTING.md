@@ -75,7 +75,7 @@ file](plugin/ps_config.vim), and also wrap it in a conditional
 
 ```vim
 if ps#CanUseMyNewFeature()
-  command! MyNewFeature call my_new_feature#MyNewFeature()
+  command! MyNewFeature call ps#my_new_feature#MyNewFeature()
 endif
 ```
 

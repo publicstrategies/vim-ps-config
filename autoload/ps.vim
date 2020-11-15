@@ -26,8 +26,10 @@ let s:mode_map = {
 ""
 " Sets up a new PS project. If reload = 1, will reload the plugin.
 function! ps#NewProject(reload) abort
-  call database#CreateSQLDir(0)
-  call notes#CreateNotesDir(0)
+  call ps#database#CreateSQLDir(0)
+  call ps#notes#CreateNotesDir(0)
+  call ps#database#CreateDBDiagramDir(0)
+  call ps#rest#CreateRestDir(0)
 
   if getfsize('.vimrc') > 0
     call ps#Warn("'.vimrc' already exists and not empty.")
@@ -63,20 +65,20 @@ function! ps#Vimrc(reload) abort
         \    "\" let g:db_default_database = 'development'",
         \    "",
         \    "\"\"",
-        \    "\" Change the sql file directory. The default is '" . database#GetSQLDirectory() . "'",
-        \    "\" let g:db_sql_directory = '"  . database#GetSQLDirectory() . "'",
+        \    "\" Change the sql file directory. The default is '" . ps#database#GetSQLDirectory() . "'",
+        \    "\" let g:db_sql_directory = '"  . ps#database#GetSQLDirectory() . "'",
         \    "",
         \    "\"\"",
-        \    "\" Change the dbml file directory. The default is '" . database#GetDBDiagramDirectory() . "'",
-        \    "\" let g:db_diagram_directory = '"  . database#GetDBDiagramDirectory() . "'",
+        \    "\" Change the dbml file directory. The default is '" . ps#database#GetDBDiagramDirectory() . "'",
+        \    "\" let g:db_diagram_directory = '"  . ps#database#GetDBDiagramDirectory() . "'",
         \    "",
         \    "\"\"",
-        \    "\" Change the notes file directory. The default is '" . notes#GetNotesDirectory() . "'",
-        \    "\" let g:db_notes_directory = '"  . notes#GetNotesDirectory() . "'",
+        \    "\" Change the notes file directory. The default is '" . ps#notes#GetNotesDirectory() . "'",
+        \    "\" let g:db_notes_directory = '"  . ps#notes#GetNotesDirectory() . "'",
         \    "",
         \    "\"\"",
-        \    "\" Change the rest file directory. The default is '" . rest#GetRestDirectory() . "'",
-        \    "\" let g:db_notes_directory = '"  . rest#GetRestDirectory() . "'",
+        \    "\" Change the rest file directory. The default is '" . ps#rest#GetRestDirectory() . "'",
+        \    "\" let g:db_notes_directory = '"  . ps#rest#GetRestDirectory() . "'",
         \    "",
         \    "\"\"",
         \    "\" Change the list of available database URLs. There is no default.",

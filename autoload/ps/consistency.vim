@@ -1,6 +1,6 @@
 ""
 " Set the settings found in g:ps_consistency_settings_list, or defaults.
-function! consistency#SetConsistentSettings()
+function! ps#consistency#SetConsistentSettings()
   let l:settings = s:ConsistencyDefaults()
 
   if exists('g:ps_consistency_settings_list')

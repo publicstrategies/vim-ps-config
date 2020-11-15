@@ -12,14 +12,14 @@ let s:DescribeTablesDictionary = {
 ""
 " List which database the b:db or g:db url points to. If ! is used, Also show
 " the actual URL.
-function! database#DBList(show_url) abort
+function! ps#database#DBList(show_url) abort
   if !s:validate() | return | endif
 
-  let l:db = database#GetURL()
+  let l:db = ps#database#GetURL()
 
   for [l:key, l:value] in g:db_list
     if l:value ==# l:db
-      let l:string = database#GetDBVar() . ' is set to ' . l:key
+      let l:string = ps#database#GetDBVar() . ' is set to ' . l:key
       if a:show_url | let l:string .= ': ' . l:db | endif
 
       if match(l:key, 'production') >= 0
@@ -38,7 +38,7 @@ endfunction
 ""
 " Function that switches the database URL.
 " NOTE that this only changes it for the current BUFFER, not globally!
-function! database#DBSwitch(force, ...) abort
+function! ps#database#DBSwitch(force, ...) abort
   if !s:validate() | return | endif
 
   let l:database = a:0 == 1 ? a:1 : g:db_default_database
@@ -72,7 +72,7 @@ endfunction
 " Finds the database by 'key' in g:db list. If not found, returns the defualt.
 " HACK? I was getting tired and couldn't think of an easier way to get the
 "       'key' from the 2-D list.
-function! database#FindDBByKey(key, use_dev_suffix, default) abort
+function! ps#database#FindDBByKey(key, use_dev_suffix, default) abort
   if !s:validate() | return | endif
 
   for [l:key, l:value] in g:db_list
@@ -88,11 +88,11 @@ endfunction
 ""
 " Generates SQL based argument passed, or off current file name if no args.
 " If `place_above_cursor` is 1, will insert text above corser position.
-function! database#GenerateSQL(place_above_cursor, ...) abort
+function! ps#database#GenerateSQL(place_above_cursor, ...) abort
   if !s:validate() | return | endif
 
   let l:table = a:0 ? a:1 : expand('%:t:r')
-  let l:adapter = database#GetAdapter()
+  let l:adapter = ps#database#GetAdapter()
   let l:cursor_pos = line('.')
 
   if a:place_above_cursor | let l:cursor_pos -= 1 | endif
@@ -117,7 +117,7 @@ endfunction
 ""
 " Generates DBDiagram based argument passed, or off current file name if no args.
 " If `place_above_cursor` is 1, will insert text above corser position.
-function! database#GenerateDBDiagram(place_above_cursor, ...) abort
+function! ps#database#GenerateDBDiagram(place_above_cursor, ...) abort
   let l:table = a:0 ? a:1 : expand('%:t:r')
   let l:cursor_pos = line('.')
 
@@ -139,9 +139,9 @@ endfunction
 
 ""
 " Opens/creates a sql file.
-function! database#File(table) abort
-  let l:dir = database#GetSQLDirectory()
-  if !isdirectory(l:dir) | call database#CreateSQLDirectory() | endif
+function! ps#database#File(table) abort
+  let l:dir = ps#database#GetSQLDirectory()
+  if !isdirectory(l:dir) | call ps#database#CreateSQLDirectory() | endif
   let l:file = l:dir . a:table
 
   if l:file !~#  '\.sql$' | let l:file = l:file . '.sql' | endif
@@ -151,9 +151,9 @@ endfunction
 
 ""
 " Opens/creates a dbdiagram file.
-function! database#DBDiagram(table) abort
-  let l:dir = database#GetDBDiagramDirectory()
-  if !isdirectory(l:dir) | call database#CreateDBDiagramDirectory() | endif
+function! ps#database#DBDiagram(table) abort
+  let l:dir = ps#database#GetDBDiagramDirectory()
+  if !isdirectory(l:dir) | call ps#database#CreateDBDiagramDirectory() | endif
   let l:file = l:dir . a:table
 
   if l:file !~#  '\.dbml$' | let l:file = l:file . '.dbml' | endif
@@ -163,8 +163,8 @@ endfunction
 
 ""
 " Creates the DBDiagram directory.
-function! database#CreateDBDiagramDir(fail_silently) abort
-  let l:dir = database#GetDBDiagramDirectory()
+function! ps#database#CreateDBDiagramDir(fail_silently) abort
+  let l:dir = ps#database#GetDBDiagramDirectory()
 
   if isdirectory(l:dir)
     if !a:fail_silently
@@ -178,8 +178,8 @@ function! database#CreateDBDiagramDir(fail_silently) abort
 endfunction
 ""
 " Creates the sql directory.
-function! database#CreateSQLDir(fail_silently) abort
-  let l:dir = database#GetSQLDirectory()
+function! ps#database#CreateSQLDir(fail_silently) abort
+  let l:dir = ps#database#GetSQLDirectory()
 
   if isdirectory(l:dir)
     if !a:fail_silently
@@ -194,13 +194,13 @@ endfunction
 
 ""
 " Returns the adapter from URL.
-function! database#GetAdapter() abort
-  return split(database#GetURL(), ':')[0]
+function! ps#database#GetAdapter() abort
+  return split(ps#database#GetURL(), ':')[0]
 endfunction
 
 ""
 " Returns the current value of b:db, or g:db.
-function! database#GetURL() abort
+function! ps#database#GetURL() abort
   for l:var in ['b:db', 'g:db']
     if exists(l:var) | return eval(l:var) | endif
   endfor
@@ -208,7 +208,7 @@ endfunction
 
 ""
 " Returns the DBDiagram directory.
-function! database#GetDBDiagramDirectory()
+function! ps#database#GetDBDiagramDirectory()
   if exists('g:db_diagram_directory')
     let l:dir = g:db_diagram_directory
   elseif isdirectory('db')
@@ -224,7 +224,7 @@ endfunction
 
 ""
 " Returns the sql directory.
-function! database#GetSQLDirectory()
+function! ps#database#GetSQLDirectory()
   if exists('g:db_sql_directory')
     let l:dir = g:db_sql_directory
   elseif isdirectory('db')
@@ -240,7 +240,7 @@ endfunction
 
 ""
 " Returns the current b:db, or g:db.
-function! database#GetDBVar() abort
+function! ps#database#GetDBVar() abort
   for l:var in ['b:db', 'g:db']
     if exists(l:var) | return l:var | endif
   endfor
@@ -248,9 +248,9 @@ endfunction
 
 ""
 " Completions for DBDiagram Files.
-function! database#DBDiagramCompletion(arg_lead, cmd_line, cursor_pos)
-  let l:dir = database#GetDBDiagramDirectory()
-  if !isdirectory(l:dir) | call database#CreateDBDiagramDir(1) | endif
+function! ps#database#DBDiagramCompletion(arg_lead, cmd_line, cursor_pos)
+  let l:dir = ps#database#GetDBDiagramDirectory()
+  if !isdirectory(l:dir) | call ps#database#CreateDBDiagramDir(1) | endif
   let l:olddir = chdir(l:dir)
   let l:list = glob('**/*.dbml', 0, 1)
   call chdir(l:olddir)
@@ -259,9 +259,9 @@ endfunction
 
 ""
 " Completions for SQL Files.
-function! database#SQLFileCompletion(arg_lead, cmd_line, cursor_pos)
-  let l:dir = database#GetSQLDirectory()
-  if !isdirectory(l:dir) | call database#CreateSQLDir(1) | endif
+function! ps#database#SQLFileCompletion(arg_lead, cmd_line, cursor_pos)
+  let l:dir = ps#database#GetSQLDirectory()
+  if !isdirectory(l:dir) | call ps#database#CreateSQLDir(1) | endif
   let l:olddir = chdir(l:dir)
   let l:list = glob('**/*.sql', 0, 1)
   call chdir(l:olddir)
@@ -270,7 +270,7 @@ endfunction
 
 ""
 " Function for returning completion options, which are the keys to g:db_list.
-function! database#ListCompletions(arg_lead, cmd_line, cursor_pos) abort
+function! ps#database#ListCompletions(arg_lead, cmd_line, cursor_pos) abort
   if !s:validate() | return | endif
 
   let l:copy = deepcopy(g:db_list)
