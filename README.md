@@ -363,9 +363,9 @@ let g:ps_config_use_consistency = 0
 
 ### Features not Covered in this Readme
 Read the `:help` documentation for the following features:
-- `ps-notes`
-- `ps-rest`
-- `ps-dbml`
+- [ps-notes](https://github.com/publicstrategies/vim-ps-config/blob/master/doc/ps_config.txt#L690)
+- [ps-rest](https://github.com/publicstrategies/vim-ps-config/blob/master/doc/ps_config.txt#L647)
+- [ps-dbml](https://github.com/publicstrategies/vim-ps-config/blob/master/doc/ps_config.txt#L590)
 
 ## Dependencies and Recommended Plugins:
 - [vim-dadbod](https://github.com/tpope/vim-dadbod) is needed for DadBod's
