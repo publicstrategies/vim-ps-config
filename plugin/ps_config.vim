@@ -33,10 +33,10 @@ if !ps#IsPsProject() | finish | endif
 if ps#CanUseFrameworkCommands()
   ""
   " Wrapper for rails that understands docker and bundler.
-  command! -nargs=* -complete=file PSRails call framework#Rails(<f-args>)
+  command! -nargs=* -complete=file PSRails call ps#framework#Rails(<f-args>)
   ""
   " Wrapper for Artisan that understands docker.
-  command! -nargs=* -complete=file PSArtisan call framework#Artisan(<f-args>)
+  command! -nargs=* -complete=file PSArtisan call ps#framework#Artisan(<f-args>)
 endif
 
 ""
@@ -44,29 +44,29 @@ endif
 "    let g:ps_config_use_consistency = 0
 " in your .vimrc
 if ps#CanUseConsistency()
-  call consistency#SetConsistentSettings()
+  call ps#consistency#SetConsistentSettings()
 endif
 
 if ps#CanUseRest()
   ""
   " Sign in. If ! is used, will also echo the token.
-  command! -nargs=? -bang PSSignIn call rest#SignIn(<bang>0, <f-args>)
+  command! -nargs=? -bang PSSignIn call ps#rest#SignIn(<bang>0, <f-args>)
 
   ""
   " Open rest file.
-  command! -nargs=+ -complete=custom,rest#FileCompletion
-        \ PSRest call rest#File(<f-args>)
+  command! -nargs=+ -complete=custom,ps#rest#FileCompletion
+        \ PSRest call ps#rest#File(<f-args>)
 
   ""
   " Provide a command to generate rest files. Add ! to place above cursor.
   " Example: `:PSGenerateRest users`
-  command! -bang -nargs=? PSGenerateRest call rest#GenerateRest(<bang>0, <f-args>)
+  command! -bang -nargs=? PSGenerateRest call ps#rest#GenerateRest(<bang>0, <f-args>)
 endif
 
 if ps#CanUseNotes()
-  command! -nargs=+ -complete=custom,notes#NoteFileCompletion
-        \ PSNote call notes#File(<f-args>)
-  command! -bang PSCreateNotesDir call notes#CreateNotesDir(<bang>0)
+  command! -nargs=+ -complete=custom,ps#notes#NoteFileCompletion
+        \ PSNote call ps#notes#File(<f-args>)
+  command! -bang PSCreateNotesDir call ps#notes#CreateNotesDir(<bang>0)
 endif
 
 ""
@@ -83,23 +83,23 @@ if ps#CanUseDadbod()
   ""
   " Creates the SQL dir.
   " If ! is used, will silence warnings.
-  command! -bang DBCreateSQLDir call database#CreateSQLDir(<bang>0)
+  command! -bang DBCreateSQLDir call ps#database#CreateSQLDir(<bang>0)
 
   ""
   " Open database file.
-  command! -nargs=+ -complete=custom,database#SQLFileCompletion
-        \ DBFile call database#File(<f-args>)
+  command! -nargs=+ -complete=custom,ps#database#SQLFileCompletion
+        \ DBFile call ps#database#File(<f-args>)
 
   ""
   " Open database file.
-  command! -nargs=+ -complete=custom,database#DBDiagramCompletion
-        \ DBDiagram call database#DBDiagram(<f-args>)
+  command! -nargs=+ -complete=custom,ps#database#DBDiagramCompletion
+        \ DBDiagram call ps#database#DBDiagram(<f-args>)
 
   ""
   " If g:db isn't set, but g:db_list is, set g:db to g:db_default_database.
   " If that key doesn't exist, set g:db to the first db in the list.
   if !exists('g:db') && exists('g:db_list')
-    let g:db = database#FindDBByKey(g:db_default_database, 0, g:db_list[0][1])
+    let g:db = ps#database#FindDBByKey(g:db_default_database, 0, g:db_list[0][1])
   endif
 
   ""
@@ -107,24 +107,24 @@ if ps#CanUseDadbod()
   " If no arg is passed, defaults to g:db_default_database.
   " Example: `:DBSwitch test`
   "       => Switching to test database
-  command! -bang -nargs=? -complete=custom,database#ListCompletions
-        \ DBSwitch call database#DBSwitch(<bang>0, <f-args>)
+  command! -bang -nargs=? -complete=custom,ps#database#ListCompletions
+        \ DBSwitch call ps#database#DBSwitch(<bang>0, <f-args>)
 
   ""
   " Provide a command to show the current db url. Add ! to show actual URL
   " Example: `:DBList!`
   "       => g:db is set to development: postgres://user@host/database
-  command! -bang DBList call database#DBList(<bang>0)
+  command! -bang DBList call ps#database#DBList(<bang>0)
 
   ""
   " Provide a command to generate SQL. Add ! to place above cursor.
   " Example: `:DBGenerateSQL users`
   "       => Default SQL queries for 'users' would be added to file.
-  command! -bang -nargs=? DBGenerateSQL call database#GenerateSQL(<bang>0, <f-args>)
+  command! -bang -nargs=? DBGenerateSQL call ps#database#GenerateSQL(<bang>0, <f-args>)
 
   ""
   " Provide a command to generate Diagrams. Add ! to place above cursor.
   " Example: `:DBGenerateDiagram users`
   "       => Default SQL queries for 'users' would be added to file.
-  command! -bang -nargs=? DBGenerateDiagram call database#GenerateDBDiagram(<bang>0, <f-args>)
+  command! -bang -nargs=? DBGenerateDiagram call ps#database#GenerateDBDiagram(<bang>0, <f-args>)
 endif

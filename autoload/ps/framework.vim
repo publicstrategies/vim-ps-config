@@ -1,4 +1,4 @@
-function! framework#Rails(...)
+function! ps#framework#Rails(...)
   if !has('terminal')
     echom 'Your vim version does not have terminal support.'
     return
@@ -20,7 +20,7 @@ function! framework#Rails(...)
   execute 'botright' 'terminal' l:commands
 endfunction
 
-function! framework#Artisan(...)
+function! ps#framework#Artisan(...)
   if !has('terminal')
     echom 'Your vim version does not have terminal support.'
     return

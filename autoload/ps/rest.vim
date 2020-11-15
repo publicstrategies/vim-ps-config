@@ -1,6 +1,6 @@
 ""
 " Sign into the website and set $PS_TOKEN to the jwt.
-function! rest#SignIn(verbose, ...) abort
+function! ps#rest#SignIn(verbose, ...) abort
   if a:0
     let l:token = a:1
   else
@@ -23,7 +23,7 @@ endfunction
 
 ""
 " Returns the rest directory.
-function! rest#GetRestDirectory()
+function! ps#rest#GetRestDirectory()
   let l:dir = get(g:, 'ps_rest_directory', 'test/support/api/rest')
 
   return resolve(expand(l:dir)) . '/'
@@ -33,9 +33,9 @@ endfunction
 " Opens/creates a rest file.
 ""
 " Opens/creates a sql file.
-function! rest#File(controller) abort
-  let l:dir = rest#GetRestDirectory()
-  if !isdirectory(l:dir) | call rest#CreateRestDir() | endif
+function! ps#rest#File(controller) abort
+  let l:dir = ps#rest#GetRestDirectory()
+  if !isdirectory(l:dir) | call ps#rest#CreateRestDir() | endif
   let l:file = l:dir . a:controller
 
   if l:file !~#  '\.rest$' | let l:file = l:file . '.rest' | endif
@@ -45,8 +45,8 @@ endfunction
 
 ""
 " Creates the rest directory.
-function! rest#CreateRestDir(fail_silently) abort
-  let l:dir = rest#GetRestDirectory()
+function! ps#rest#CreateRestDir(fail_silently) abort
+  let l:dir = ps#rest#GetRestDirectory()
 
   if isdirectory(l:dir)
     if !a:fail_silently
@@ -61,9 +61,9 @@ endfunction
 
 ""
 " Completions for rest files.
-function! rest#FileCompletion(arg_lead, cmd_line, cursor_pos) abort
-  let l:dir = rest#GetRestDirectory()
-  if !isdirectory(l:dir) | call rest#CreateRestDir(1) | endif
+function! ps#rest#FileCompletion(arg_lead, cmd_line, cursor_pos) abort
+  let l:dir = ps#rest#GetRestDirectory()
+  if !isdirectory(l:dir) | call ps#rest#CreateRestDir(1) | endif
   let l:olddir = chdir(l:dir)
   let l:list = glob('**/*.rest', 0, 1)
   call chdir(l:olddir)
@@ -73,7 +73,7 @@ endfunction
 ""
 " Generates Rest file based argument passed, or off current file name if no args.
 " If `place_above_cursor` is 1, will insert text above corser position.
-function! rest#GenerateRest(place_above_cursor, ...) abort
+function! ps#rest#GenerateRest(place_above_cursor, ...) abort
   let l:controller = a:0 ? a:1 : expand('%:t:r')
   let l:cursor_pos = line('.')
 
