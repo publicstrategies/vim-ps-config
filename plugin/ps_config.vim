@@ -39,16 +39,28 @@ if ps#CanUseFrameworkCommands()
   command! -nargs=* -complete=file PSArtisan call framework#Artisan(<f-args>)
 endif
 
-if ps#CanUseCurl()
-  command! PSCurl call ps#Curl()
-endif
-
 ""
 " Add consistency settings. Can be disabled by setting:
 "    let g:ps_config_use_consistency = 0
 " in your .vimrc
 if ps#CanUseConsistency()
   call consistency#SetConsistentSettings()
+endif
+
+if ps#CanUseRest()
+  ""
+  " Sign in. If ! is used, will also echo the token.
+  command! -nargs=? -bang PSSignIn call rest#SignIn(<bang>0, <f-args>)
+
+  ""
+  " Open rest file.
+  command! -nargs=+ -complete=custom,rest#FileCompletion
+        \ PSRest call rest#File(<f-args>)
+
+  ""
+  " Provide a command to generate rest files. Add ! to place above cursor.
+  " Example: `:PSGenerateRest users`
+  command! -bang -nargs=? PSGenerateRest call rest#GenerateRest(<bang>0, <f-args>)
 endif
 
 if ps#CanUseNotes()

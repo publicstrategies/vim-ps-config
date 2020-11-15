@@ -12,9 +12,9 @@
 
 ABOUT                                               *ps-config-about* *ps-about*
 
-Author:  Evan Gray <mailto:evan.gray@publicstrategies.com>
-Repo:    https://gitlab.com/publicstrategies/vim-psi-config
-License: MIT License
+Author:     Evan Gray <mailto:evan.gray@publicstrategies.com>
+Repository: https://gitlab.com/publicstrategies/vim-psi-config
+License:    MIT
 
 ================================================================================
 
@@ -36,6 +36,9 @@ Commands .................................. |ps-commands|
   Generate default SQL .................... |DBGenerateSQL|
   Create or open a DBDiagram file ......... |DBDiagram|
   Generate default diagram ................ |DBGenerateDiagram|
+  Sign in and set token ................... |PSSignIn|
+  Open a rest file ........................ |PSRest|
+  Generate default rest ................... |PSGenerateRest|
   Create notes directory .................. |PSCreateNotesDir|
   Create or open a notes file ............. |PSNote|
   Call rails commands from terminal ....... |PSRails|
@@ -46,16 +49,22 @@ Settings .................................. |ps-settings|
     Consistency settings .................. |g:ps_consistency_settings_list|
     Notes file path ....................... |g:ps_notes_directory|
     SQL file path ......................... |g:db_sql_directory|
-    List of databse URLs .................. |g:db_list|
+    List of database URLs ................. |g:db_list|
     Default database from list ............ |g:db_default_database|
     Silence DBSwitch production warning ... |g:db_switch_confirm_production|
     Silence DBSwitch messages ............. |g:db_switch_silently|
+    Auto-sign-in when opening a rest file . |g:ps_rest_auto_sign_in|
+    The cURL command used to sign in ...... |g:ps_rest_curl_command|
+    Regex used to capture token ........... |g:ps_rest_token_regex|
+    Directory where rest files are kept ... |g:ps_rest_directory|
+    Add cURL options to text generation ... |g:ps_rest_curl_opts|
+    Add headers to text generation ........ |g:ps_rest_headers|
   How to disable features ................. |ps-disabling-features|
     Disable dadbod extended functionality . |g:ps_config_use_dadbod|
     Disable framework commands ............ |g:ps_config_use_framework_commands|
     Disable consistency ................... |g:ps_config_use_consistency|
     Disable notes.......................... |g:ps_config_use_notes|
-    Disable curl .......................... |g:ps_config_use_curl|
+    Disable rest .......................... |g:ps_config_use_rest|
 Features and Examples ..................... |ps-features|
   DadBod Extended Functionality ........... |ps-dadbod|
     Switching between database URLs ....... |ps-db-url-switching|
@@ -64,6 +73,7 @@ Features and Examples ..................... |ps-features|
   DBML .................................... |ps-dbml|
     SQL files ............................. |ps-dbml-files|
     DBML Syntax ........................... |ps-dbml-syntax|
+  Rest Console support .................... |ps-rest|
   Project-specific notes .................. |ps-notes|
   Calling framework commands .............. |ps-framework-commands|
   Enforcing Consistency ................... |ps-enforcing-consistency|
@@ -186,7 +196,7 @@ Note: If a command doesn't exist, the feature is probably disabled. See
 
                                                         *DBDiagram* *:DBDiagram*
 :DBDiagram {table}         Open a DBML file for {table} in
-                           |g:db_diagrm_directory|. If the file doesn't exist,
+                           |g:db_diagram_directory|. If the file doesn't exist,
                            it will be created and |DBGenerateDiagram| will be
                            invoked. <Tab> completion will list existing files.
                            A ".dbml" file extension is optional; it will be
@@ -205,6 +215,37 @@ Note: If a command doesn't exist, the feature is probably disabled. See
 :DBGenerateDiagram! [{table}]
                            Same as |DBGenerateDiagram|, but places the text
                            above the cursor.
+
+                                                            *PSSignIn* *:SignIn*
+:PSSignIn [{token}]        Set $PS_TOKEN to {token}. If {token} is not passed,
+                           will sign in via |g:ps_rest_curl_command|, and the
+                           token will be set using |g:ps_rest_token_regex|.
+
+                                                          *PSSignIn!* *:SignIn!*
+:PSSignIn! [{token}]       Same as |PSRest|, but echo the token.
+
+                                                              *PSRest* *:PSRest*
+:PSRest {resource}         Open a Rest file for {resource} in
+                           |g:db_rest_directory|. If the file doesn't exist,
+                           it will be created and |PSGenerateRest| will be
+                           invoked. <Tab> completion will list existing files.
+                           A ".rest" file extension is optional; it will be
+                           automatically appended if absent.
+
+                                              *PSGenerateRest* *:PSGenerateRest*
+:PSGenerateRest [{resource}]
+                           Generate default rest file for {resource}, where
+                           {resource} is the associated resource. If {resource}
+                           is not passed, generates based off current file
+                           name. For example, if the file name is "users.rest",
+                           rest contents will be generated for the users
+                           resource. Note that nothing is done to ensure
+                           {resource} is a valid resource name.
+
+                                            *PSGenerateRest!* *:PSGenerateRest!*
+:PSGenerateRest! [{resource}]
+                           Same as |PSGenerateRest|, but place the generated
+                           text above the cursor.
 
                                           *PSCreateNotesDir* *:PSCreateNotesDir*
 :PSCreateNotesDir [{dir}]  Create the notes {dir}. If {dir} isn't passed,
@@ -296,6 +337,45 @@ default is what's in the example.
 >
     let g:db_default_database = 'development'
 <
+
+                                                        *g:ps_rest_auto_sign_in*
+Boolean that tells the plugin to automatically try to sign-in when opening a
+rest file, and $PS_TOKEN is not already set.
+Default: 1 (enabled).
+>
+    let g:ps_rest_auto_sign_in = 0
+<
+                                                        *g:ps_rest_curl_command*
+The cURL command to be used to sign in to the website. To capture the token,
+you must set |g:ps_rest_token_regex|. There is no default.
+>
+    let g:ps_rest_curl_command = "curl -sSL -D - " .
+          \ "-d 'user[email]=john.smith@example.com" .
+          \ "&user[password]=PASSWORD&user[remember_me]=0' " .
+          \ "http://localhost:3000/users/sign_in -o /dev/null"
+<
+                                                         *g:ps_rest_token_regex*
+The regex used to capture the token from the output of |g:ps_rest_curl_command|.
+There is no default.
+>
+    let g:ps_rest_token_regex = 'Authorization:\sBearer\s\zs[a-zA-Z0-9_\-\.]*\ze'
+<
+                                                           *g:ps_rest_directory*
+The directory where rest file are stored. The default is "test/support/api/rest".
+>
+    let g:ps_rest_directory = "test/rest"
+<
+                                                             *g:ps_rest_headers*
+Array of headers to be added when generating rest file contents.
+>
+    let g:ps_rest_headers = ['Some Header: header']
+<
+                                                           *g:ps_rest_curl_opts*
+Array of cURL options to be added when generating rest file contents.
+>
+    let g:ps_rest_curl_opts = ['--some-curl-opt']
+<
+
                           *ps-config-disabling-features* *ps-disabling-features*
 Disabling Features~
 
@@ -320,11 +400,11 @@ Default: 1 (enabled).
 >
     let g:ps_config_use_consistency = 0
 <
-                                                          *g:ps_config_use_curl*
-Boolean to enable/disable curl features.
+                                                          *g:ps_config_use_rest*
+Boolean to enable/disable rest features.
 Default: 1 (enabled).
 >
-    let g:ps_config_use_curl = 0
+    let g:ps_config_use_rest = 0
 <
                                                          *g:ps_config_use_notes*
 Boolean to enable/disable notes features.
@@ -421,7 +501,7 @@ To learn about database URLs, read the help documentation for DadBod.
 SQL files and automatic database URLs~
 
 In most of our projects, we keep a directory for storing common SQL queries for
-tables. The directory is usually one of the following:
+tables. The directory is usually one of the following.
 >
     | Rails   | Laravel       |
     |---------|---------------|
@@ -433,7 +513,7 @@ database -- either "development" if it exists, or the first database listed in
 sub-directory matches a key in |g:db_list|, the database URL will be set to
 that key's value.
 
-Assuming a Rails project's vimrc contains the following:
+Assuming a Rails project's vimrc contains the following.
 >
     let g:db_list = [
           \   ['development',       'postgres://user@host/database'],
@@ -470,13 +550,10 @@ Any new or empty SQL file in |g:db_sql_directory| opened with vim will
 automatically have default queries generated in the file. It is assumed that
 the file name will be the table name to query. These queries are even adapter
 aware, which as we've learned, are based off the directory in which they
-reside. Assuming the file name is "users.sql":
+reside. Assuming the file name is "users.sql".
 
-If the adapter is postgres, the following contents will be placed in the file:
+If the adapter is postgres, the following contents will be placed in the file.
 >
-    -- SQL for 'users' table generated by vim-ps-config.
-    -- Sun Feb 23 08:23:53 2020
-
     -- List all tables in the database.
     \dt;
 
@@ -489,11 +566,8 @@ If the adapter is postgres, the following contents will be placed in the file:
     -- List all records from the 'users' table.
     select * from users;
 <
-If the adapter is mysql, the following contents will be placed in the file:
+If the adapter is mysql, the following contents will be placed in the file.
 >
-    -- SQL for 'users' table generated by vim-ps-config.
-    -- Sun Feb 23 08:23:53 2020
-
     -- List all tables in the database.
     show tables;
 
@@ -533,9 +607,6 @@ following to open a diagram for the "users" table.
 Upon opening "db/diagrams/users.dbml" for the first time, the following text
 will be generated.
 >
-    // DBDiagram for 'users' table generated by vim-ps-config.
-    // Mon Jul  6 15:43:44 2020
-
     // View diagrams on https://dbdiagram.io
 
     Table users as u {
@@ -573,6 +644,49 @@ Here is a quick-reference guide for dbml syntax.
     }
 <
 
+REST CONSOLE SUPPORT                                  *ps-rest* *ps-config-rest*
+
+This plugin includes added support for vim-rest-console
+(https://github.com/diepm/vim-rest-console). To use our APIs, a token must be
+set in the request header. Rest Console can use global variables, so this
+plugin can set $PS_TOKEN via the |PSSignIn|. This process can be completely
+automated; when opening a rest file, if $PS_TOKEN is not already set, and
+|g:ps_rest_auto_sign_in| isn't disabled, you will be signed in automatically.
+This requires setting |g:ps_rest_curl_command| and |g:ps_rest_token_regex|. If
+auto-sign-in is disabled, you can sign in by calling the following command.
+Adding a "!" will also echo the token.
+>
+    :PSSignIn
+<
+You can manually set $PS_TOKEN by passing the token as an argument.
+>
+    :PSSignIn $up3r-$3cr3t-t0k3n
+<
+Upon opening a rest file, if the file has no contents, some defaults will be
+automatically generated. The associated resource (and therefor, route) is
+assumed from the rest file name. Assuming we run the following command...
+>
+    :PSRest users
+<
+The following text will be generated.
+>
+    bearer = $PS_TOKEN
+
+    # Add curl options here
+
+    Accept: application/json
+    Content-Type: application/json
+    Authorization: Bearer :bearer
+    # Add headers here
+
+    --
+
+    http://localhost:3000
+    GET /api/users
+<
+You can add custom cURL options and request headers by setting
+|g:ps_rest_curl_opts| and |g:ps:rest_headers|, respectively.
+
 NOTES                                               *ps-config-notes* *ps-notes*
 
 Notes are handled similarly to |ps-sql-files|. They are just markdown files
@@ -593,7 +707,8 @@ FRAMEWORK COMMANDS        *ps-config-framework-commands* *ps-framework-commands*
 For Rails and Laravel projects, commands exist to leverage vim's terminal
 feature to call rails and artisan. These are docker-aware, and will use
 docker-compose if in a Docker environment. If no arguments are passed, a REPL is
-opened. For example, to run the tests for a project, it's as simple as:
+opened. For example, to run the tests for a project, it's as simple as doing
+the following.
 >
     :PSRails test
     :PSArtisan test
@@ -614,7 +729,7 @@ Other settings that get enabled:
     - 'nocompatible'
 
 You can add to this list on a per-project basis by setting the following value
-in your project's vimrc file:
+in your project's vimrc file.
 >
     let g:ps_consistency_settings_list = [
         \   'backspace=2',
@@ -622,4 +737,3 @@ in your project's vimrc file:
         \ ]
 <
 Note that the elements must be valid arguments for 'set', wrapped in quotes.
-
