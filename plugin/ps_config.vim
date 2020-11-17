@@ -1,9 +1,6 @@
 ""
-" Don't load this plugin if the user has it disabled, or it's already been
-" loaded, or if there are errors in the error list.
-if (exists('g:ps_loaded_config') && g:ps_loaded_config) || &cp
-  finish
-endif
+" Don't reload load the plugin.
+if get(g:, 'ps_loaded_config') || &cp | finish | endif
 let g:ps_loaded_config = 1
 
 ""
@@ -13,7 +10,6 @@ command! -bang PSVimrc call ps#Vimrc(<bang>0)
 
 ""
 " Sets up project infrastructure.
-" Calls :PSVimrc!, :DBCreateSQLDir!
 " If ! is used, saves .vimrc file and re-loads plugin.
 command! -bang PSNewProject call ps#NewProject(<bang>0)
 
@@ -54,19 +50,19 @@ if ps#CanUseRest()
 
   ""
   " Open rest file.
-  command! -nargs=+ -complete=custom,ps#rest#FileCompletion
-        \ PSRest call ps#rest#File(<f-args>)
+  command! -nargs=+ -complete=custom,ps#rest#FileCompletion PSRest call
+        \ ps#OpenFile(ps#rest#GetRestDir(), <f-args>, 'rest')
 
   ""
   " Provide a command to generate rest files. Add ! to place above cursor.
   " Example: `:PSGenerateRest users`
-  command! -bang -nargs=? PSGenerateRest call ps#rest#GenerateRest(<bang>0, <f-args>)
+  command! -bang -nargs=? PSGenerateRest
+        \ call ps#rest#GenerateRest(<bang>0, <f-args>)
 endif
 
 if ps#CanUseNotes()
-  command! -nargs=+ -complete=custom,ps#notes#NoteFileCompletion
-        \ PSNote call ps#notes#File(<f-args>)
-  command! -bang PSCreateNotesDir call ps#notes#CreateNotesDir(<bang>0)
+  command! -nargs=+ -complete=custom,ps#notes#NoteFileCompletion PSNote
+        \ call ps#notes#File(<f-args>)
 endif
 
 ""
@@ -81,19 +77,14 @@ if ps#CanUseDadbod()
   endif
 
   ""
-  " Creates the SQL dir.
-  " If ! is used, will silence warnings.
-  command! -bang DBCreateSQLDir call ps#database#CreateSQLDir(<bang>0)
+  " Open database file.
+  command! -nargs=+ -complete=custom,ps#database#SQLFileCompletion DBFile
+        \ call ps#OpenFile(ps#database#GetSQLDir(), <f-args>, 'sql')
 
   ""
   " Open database file.
-  command! -nargs=+ -complete=custom,ps#database#SQLFileCompletion
-        \ DBFile call ps#database#File(<f-args>)
-
-  ""
-  " Open database file.
-  command! -nargs=+ -complete=custom,ps#database#DBDiagramCompletion
-        \ DBDiagram call ps#database#DBDiagram(<f-args>)
+  command! -nargs=+ -complete=custom,ps#database#DBDiagramCompletion DBDiagram
+        \ call ps#OpenFile(ps#database#GetDBDiagramDir(), <f-args>, 'dbml')
 
   ""
   " If g:db isn't set, but g:db_list is, set g:db to g:db_default_database.
@@ -107,8 +98,8 @@ if ps#CanUseDadbod()
   " If no arg is passed, defaults to g:db_default_database.
   " Example: `:DBSwitch test`
   "       => Switching to test database
-  command! -bang -nargs=? -complete=custom,ps#database#ListCompletions
-        \ DBSwitch call ps#database#DBSwitch(<bang>0, <f-args>)
+  command! -bang -nargs=? -complete=custom,ps#database#ListCompletions DBSwitch
+        \ call ps#database#DBSwitch(<bang>0, <f-args>)
 
   ""
   " Provide a command to show the current db url. Add ! to show actual URL
@@ -120,11 +111,13 @@ if ps#CanUseDadbod()
   " Provide a command to generate SQL. Add ! to place above cursor.
   " Example: `:DBGenerateSQL users`
   "       => Default SQL queries for 'users' would be added to file.
-  command! -bang -nargs=? DBGenerateSQL call ps#database#GenerateSQL(<bang>0, <f-args>)
+  command! -bang -nargs=? DBGenerateSQL
+        \ call ps#database#GenerateSQL(<bang>0, <f-args>)
 
   ""
   " Provide a command to generate Diagrams. Add ! to place above cursor.
   " Example: `:DBGenerateDiagram users`
   "       => Default SQL queries for 'users' would be added to file.
-  command! -bang -nargs=? DBGenerateDiagram call ps#database#GenerateDBDiagram(<bang>0, <f-args>)
+  command! -bang -nargs=? DBGenerateDiagram
+        \ call ps#database#GenerateDBDiagram(<bang>0, <f-args>)
 endif
