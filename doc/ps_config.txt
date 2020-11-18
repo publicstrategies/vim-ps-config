@@ -29,7 +29,6 @@ Commands .................................. |ps-commands|
   Reload the plugin ....................... |PSReloadPlugin|
   Generate project-specific vimrc file .... |PSVimrc|
   Set up a new PS project ................. |PSNewProject|
-  Create SQL directory .................... |DBCreateSQLDir|
   List the current database URL ........... |DBList|
   Switch the database URL ................. |DBSwitch|
   Create or open a SQL file ............... |DBFile|
@@ -39,7 +38,6 @@ Commands .................................. |ps-commands|
   Sign in and set token ................... |PSSignIn|
   Open a rest file ........................ |PSRest|
   Generate default rest ................... |PSGenerateRest|
-  Create notes directory .................. |PSCreateNotesDir|
   Create or open a notes file ............. |PSNote|
   Call rails commands from terminal ....... |PSRails|
   Call artisan commands from terminal ..... |PSArtisan|
@@ -144,19 +142,10 @@ Note: If a command doesn't exist, the feature is probably disabled. See
                            vimrc and invoke |PSReloadPlugin|.
 
                                                   *PSNewProject* *:PSNewProject*
-:PSNewProject              Call |PSVimrc| and |DBCreateSQLDir|.
+:PSNewProject              Call |PSVimrc| and creates all directories.
 
                                                 *PSNewProject!* *:PSNewProject!*
-:PSNewProject!             Call |PSVimrc!| and |DBCreateSQLDir|.
-
-                                              *DBCreateSQLDir* *:DBCreateSQLDir*
-:DBCreateSQLDir [{dir}]    Create the {dir} if it doesn't exist. If {dir} is not
-                           passed, |g:db_sql_file_path| is used. Note that if
-                           {dir} is a regex, like the default value for
-                           |g:db_sql_file_path|, this command won't work.
-
-                                            *DBCreateSQLDir!* *:DBCreateSQLDir!*
-:DBCreateSQLDir! [{dir}]   Same as |DBCreateSQLDir|, but silence error messages.
+:PSNewProject!             Call |PSVimrc!| and creates all directories.
 
                                                               *DBList* *:DBList*
 :DBList                    Show the key of the current database URL.
@@ -246,13 +235,6 @@ Note: If a command doesn't exist, the feature is probably disabled. See
 :PSGenerateRest! [{resource}]
                            Same as |PSGenerateRest|, but place the generated
                            text above the cursor.
-
-                                          *PSCreateNotesDir* *:PSCreateNotesDir*
-:PSCreateNotesDir [{dir}]  Create the notes {dir}. If {dir} isn't passed,
-                           |g:ps_notes_directory| is used.
-
-                                        *PSCreateNotesDir!* *:PSCreateNotesDir!*
-:PSCreateNotesDir! [{dir}] Same as |PSCreateNotesDir|, but silence errors.
 
                                                               *PSNote* *:PSNote*
 :PSNote {topic} [, ...]    Create new {topic} markdown file in the

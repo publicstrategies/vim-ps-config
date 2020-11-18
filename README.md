@@ -130,7 +130,7 @@ let g:is_ps_project = 1
 
 ""
 " Change the sql file directory. The default is what's in the example.
-" let g:db_sql_directory = '/d\(b\|atabase\)/sql'
+" let g:db_sql_directory = 'db'
 
 ""
 " Change the list of available database URLs. There is no default.
@@ -146,19 +146,13 @@ file and reload the plugin.
 If you want to set `g:db_list` before reloading the plugin, use the non-bang
 version, make your edits, save the file, and then call `:PSReloadPlugin`
 
-There's also a command to create the `sql` directory if it doesn't exist:
-
-```
-:DBCreateSQLDir[!] [DIR]
-```
-
 If `DIR` is passed, it's used as the directory name. This can included nested
 directories, as they will be made with `mkdir -p`. If `DIR` is not passed, the
 plugin will use `g:db_sql_directory` if it exists. If `!` is used, errors will
 be suppressed.
 
-If you want to run both `:PSVimrc` and `:DBCreateSQLDir!` to set up all the
-infrastructure at the same time, a command exists for that:
+If you want to run both `:PSVimrc` and create all necessary directories at the
+same time, a command exists for that:
 
 ```
 :PSNewProject[!]
@@ -220,10 +214,10 @@ of the command will also show the actual DB URL.
 
 ```
 :DBList
-"=> b:db is set to mysql
+"=> b:db is set to mysql_development
 
 :DBList!
-"=> b:db is set to mysql: mysql://user:password@host:port/database
+"=> b:db is set to mysql_development: mysql://user:password@host:port/database
 ```
 
 #### Manual Switching

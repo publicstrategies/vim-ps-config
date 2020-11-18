@@ -16,58 +16,21 @@ function! ps#rest#SignIn(verbose, ...) abort
       return
     endif
   endif
-
   if a:verbose | echo 'Token set: ' . l:token | endif
   let $PS_TOKEN = l:token
 endfunction
 
 ""
 " Returns the rest directory.
-function! ps#rest#GetRestDirectory()
+function! ps#rest#GetRestDir() abort
   let l:dir = get(g:, 'ps_rest_directory', 'test/support/api/rest')
-
   return resolve(expand(l:dir)) . '/'
-endfunction
-
-""
-" Opens/creates a rest file.
-""
-" Opens/creates a sql file.
-function! ps#rest#File(controller) abort
-  let l:dir = ps#rest#GetRestDirectory()
-  if !isdirectory(l:dir) | call ps#rest#CreateRestDir() | endif
-  let l:file = l:dir . a:controller
-
-  if l:file !~#  '\.rest$' | let l:file = l:file . '.rest' | endif
-
-  execute 'edit' l:file
-endfunction
-
-""
-" Creates the rest directory.
-function! ps#rest#CreateRestDir(fail_silently) abort
-  let l:dir = ps#rest#GetRestDirectory()
-
-  if isdirectory(l:dir)
-    if !a:fail_silently
-      call ps#Warn("Directory '" . l:dir . "' already exists.")
-    endif
-    return 0
-  endif
-
-  call mkdir(l:dir, 'p')
-  return 1
 endfunction
 
 ""
 " Completions for rest files.
 function! ps#rest#FileCompletion(arg_lead, cmd_line, cursor_pos) abort
-  let l:dir = ps#rest#GetRestDirectory()
-  if !isdirectory(l:dir) | call ps#rest#CreateRestDir(1) | endif
-  let l:olddir = chdir(l:dir)
-  let l:list = glob('**/*.rest', 0, 1)
-  call chdir(l:olddir)
-  return join(l:list, "\n")
+  return ps#FileCompletion(ps#rest#GetRestDir(), 'rest')
 endfunction
 
 ""
@@ -75,11 +38,8 @@ endfunction
 " If `place_above_cursor` is 1, will insert text above corser position.
 function! ps#rest#GenerateRest(place_above_cursor, ...) abort
   let l:controller = a:0 ? a:1 : expand('%:t:r')
-  let l:cursor_pos = line('.')
-
-  if a:place_above_cursor | let l:cursor_pos -= 1 | endif
-
-  call append(l:cursor_pos, ["bearer = $PS_TOKEN", ""] +
+  call append(a:place_above_cursor ? line('.') - 1 : line('.'),
+        \   ["bearer = $PS_TOKEN", ""] +
         \   get(g:, 'ps_rest_curl_opts', ['# Add curl options here']) +
         \   ["", "Accept: application/json",
         \   "Content-Type: application/json",
@@ -89,6 +49,18 @@ function! ps#rest#GenerateRest(place_above_cursor, ...) abort
         \   "http://localhost:3000",
         \   "GET /api/" . l:controller
         \ ])
-
   let &modified = 1
+endfunction
+
+function! ps#rest#InitializeRest() abort
+  let g:vrc_curl_opts = { '-i': '', '-s': '' }
+  let s:rest_file_directory = ps#rest#GetRestDir()
+  let s:dir_name = fnamemodify(resolve(expand('%:p')), ':h') . '/'
+  if match(s:dir_name, s:rest_file_directory) >= 0
+    if !exists('$PS_TOKEN') && get(g:, 'ps_rest_auto_sign_in', 1)
+      call ps#rest#SignIn(0)
+    endif
+    if !isdirectory(s:dir_name) | call mkdir(s:dir_name, 'p') | endif
+    if getfsize(@%) <= 0 | call ps#rest#GenerateRest(1) | endif
+  endif
 endfunction
