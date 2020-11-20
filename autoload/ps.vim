@@ -59,7 +59,7 @@ endfunction
 function! ps#FileCompletion(dir, ext) abort
   if !isdirectory(a:dir) | call ps#CreateDirectory(a:dir) | endif
   let l:list = glob(a:dir . '**/*.' . a:ext, 0, 1)
-  return join(map(l:list, "substitute(v:val, a:dir, '', 'g')"), "\n")
+  return join(map(l:list, "substitute(v:val, a:dir, '', '')"), "\n")
 endfunction
 
 ""
