@@ -24,7 +24,9 @@ command! PSUpdatePlugin call ps#UpdatePlugin()
 
 ""
 " If we're not in a PS project, quit loading the plugin.
-if !ps#IsPsProject() | finish | endif
+if &exrc && !ps#IsPsProject()
+  finish
+endif
 
 if ps#CanUseFrameworkCommands()
   ""

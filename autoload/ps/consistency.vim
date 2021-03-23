@@ -13,5 +13,5 @@ endfunction
 ""
 " The default consistency settings.
 function! s:ConsistencyDefaults() abort
-  return ['nocompatible', 'expandtab']
+  return ['expandtab']
 endfunction
