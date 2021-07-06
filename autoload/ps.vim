@@ -2,27 +2,6 @@
 " Needs to be set outside function or weird things happen due to <sfile>.
 let s:base_dir = fnamemodify(resolve(expand('<sfile>:p')), ':h:h')
 
-let s:mode_map = {
-      \ 'n'  : 'Normal',
-      \ 'no' : 'N·Operator Pending',
-      \ 'v'  : 'Visual',
-      \ 'V'  : 'V·Line',
-      \ '' : 'V·Block',
-      \ 's'  : 'Select',
-      \ 'S'  : 'S·Line',
-      \ '' : 'S·Block',
-      \ 'i'  : 'Insert',
-      \ 'R'  : 'Replace',
-      \ 'Rv' : 'V·Replace',
-      \ 'c'  : 'Command',
-      \ 'cv' : 'Vim Ex',
-      \ 'ce' : 'Ex',
-      \ 'r'  : 'Prompt',
-      \ 'rm' : 'More',
-      \ 'r?' : 'Confirm',
-      \ '!'  : 'Shell',
-      \}
-
 ""
 " Sets up a new PS project. If reload = 1, will reload the plugin.
 function! ps#NewProject(reload) abort
@@ -155,60 +134,31 @@ function! ps#UpdatePlugin() abort
 endfunction
 
 ""
-" True dadbad isn't disabled.
+" True if dadbad isn't disabled.
 function! ps#CanUseDadbod() abort
   return get(g:, 'ps_config_use_dadbod', 1)
 endfunction
 
 ""
-" True consistency isn't disabled.
+" True if consistency isn't disabled.
 function! ps#CanUseConsistency() abort
   return get(g:, 'ps_config_use_consistency', 1)
 endfunction
 
 ""
-" True framework commands aren't disabled.
+" True if framework commands aren't disabled.
 function! ps#CanUseFrameworkCommands() abort
   return get(g:, 'ps_config_use_framework_commands', 1)
 endfunction
 
 ""
-" True notes isn't disabled.
+" True if notes isn't disabled.
 function! ps#CanUseNotes() abort
   return get(g:, 'ps_config_use_notes', 1)
 endfunction
 
 ""
-" True rest isn't disabled.
+" True if rest isn't disabled.
 function! ps#CanUseRest() abort
   return get(g:, 'ps_config_use_rest', 1)
-endfunction
-
-""
-" Gets visual selection. Credit:
-" https://stackoverflow.com/questions/1533565/how-to-get-visually-selected-text-in-vimscript
-function! ps#GetSelection() abort
-  if mode() =~# '\v(n|no)'
-    return getline('.')
-  elseif mode() =~# '\v(v|V)' || s:mode_map[mode()] ==# 'V·Block'
-    let [line_start, column_start] = getpos("'<")[1:2]
-    let [line_end, column_end] = getpos("'>")[1:2]
-    let lines = getline(line_start, line_end)
-    if len(lines) == 0 | return '' | endif
-    let lines[-1] = lines[-1][: column_end - (&selection == 'inclusive' ? 1 : 2)]
-    let lines[0] = lines[0][column_start - 1:]
-    return join(lines, "\n")
-  endif
-endfunction
-
-"============="
-" Private API "
-"============="
-
-""
-" Try to intelligently determine where database directory should be located.
-function! s:GetDatabaseDir() abort
-  if isdirectory('db') | return 'db/sql' | endif
-  if isdirectory('database') | return 'database/sql' | endif
-  return 'sql'
 endfunction
