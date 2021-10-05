@@ -148,10 +148,8 @@ Note: If a command doesn't exist, the feature is probably disabled. See
 :PSNewProject!             Call |PSVimrc!| and creates all directories.
 
                                                               *DBList* *:DBList*
-:DBList                    Show the key of the current database URL.
-
-                                                            *DBList!* *:DBList!*
-:DBList!                   Same as |DBList|, but also shows the actual URL.
+:DBList                    Show the key of the current database URL. Calling
+                           with |verbose| will also show the full URL.
 
                                                           *DBSwitch* *:DBSwitch*
 :DBSwitch [{key}]          Switch the databaseb URL associated with {KEY}. If

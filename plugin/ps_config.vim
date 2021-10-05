@@ -104,10 +104,10 @@ if ps#CanUseDadbod()
         \ call ps#database#DBSwitch(<bang>0, <f-args>)
 
   ""
-  " Provide a command to show the current db url. Add ! to show actual URL
-  " Example: `:DBList!`
+  " Provide a command to show the current db url. Call with :verbose to show actual URL
+  " Example: `:verbose DBList`
   "       => g:db is set to development: postgres://user@host/database
-  command! -bang DBList call ps#database#DBList(<bang>0)
+  command! DBList call ps#database#DBList()
 
   ""
   " Provide a command to generate SQL. Add ! to place above cursor.

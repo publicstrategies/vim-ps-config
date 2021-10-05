@@ -14,13 +14,13 @@ let s:adapter_mappings = {
 ""
 " List which database the b:db or g:db url points to. If ! is used, Also show
 " the actual URL.
-function! ps#database#DBList(show_url) abort
+function! ps#database#DBList() abort
   if !s:ValidateVariables() | return | endif
   let l:db = ps#database#GetURL()
   for [l:key, l:value] in g:db_list
     if l:value ==# l:db
       let l:string = ps#database#GetDBVar() . ' is set to ' . l:key
-      if a:show_url | let l:string .= ': ' . l:db | endif
+      if &verbose | let l:string .= ': ' . l:db | endif
       if match(l:key, 'production') >= 0
         call ps#Warn(l:string)
       else
